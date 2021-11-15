@@ -96,13 +96,13 @@ void *CPU(void *id)
     for (;;)
     {
         fromSCH(myCPUid, &cpuID, &jID, &jDuration);
-        printf("cpuID:%d jID:%d duration:%d\n", cpuID, jID, jDuration);
+        // printf("cpuID:%d jID:%d duration:%d\n", cpuID, jID, jDuration);
 
         if (jID == EOSIM)
             break;
 
-        //usleep(jDuration * 1000);
-        sleep(jDuration);
+        usleep(jDuration * 1000);
+        //sleep(jDuration);
         CPUconsumed += jDuration;
     }
     //printf("Thread: myCPUid:%d cpuID:%d antes de toSCH final\n",myCPUid,cpuID);

@@ -104,25 +104,23 @@ int main(int argc, char *argv[])
     createCPUs(nCPUs);
 
     int lines = readJobSubmission(filename, jobQueue);
-    for (int i = 0; i < lines; i++)
+    /*for (int i = 0; i < lines; i++)
         printf("jQ[%d] jID %d run %d\n", i, jobQueue[i].jID,
-               jobQueue[i].duration);
+               jobQueue[i].duration);*/
 
     if (policy == 'S')
     {
-        printf("I am calling qsort\n");
+        //printf("I am calling qsort\n");
         qsort(jobQueue, lines, sizeof(struct jobQ), cmpFunc);
     }
-
-    for (int i = 0; i < lines; i++)
-        printf("jQ[%d] jID %d run %d\n", i, jobQueue[i].jID,
-               jobQueue[i].duration);
 
     // Schedule the jobs (FIFO version, assumes job runtime == duration)
     l = 0;
     cpu = 0;
     while (l < lines)
     {
+        printf("jQ[%d] jID %d run %d\n", l, jobQueue[l].jID,
+               jobQueue[l].duration);
         dispatch(l, jobQueue, cpu, cpuData);
         l++;
         cpu = (cpu + 1) % nCPUs;
