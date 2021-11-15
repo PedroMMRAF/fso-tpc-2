@@ -28,10 +28,29 @@ void getFromQueue(message msg, queue *q)
     q->slotsCheios--;
 }
 
-//TODO initialization function to init the queues and the
+// initialization function to init the queues and the
 // synchronization structures between the scheduler and one particular cpu
 void init(int cpu)
 {
+    struct CPUqueuePair *cpuQ = CPUqueues + cpu;
+
+    memset(cpuQ->rdQ.buffer, 0, sizeof(message) * N);
+    cpuQ->rdQ.slotsCheios = 0;
+    cpuQ->rdQ.slotsVazios = N;
+    cpuQ->rdQ.c = 0;
+    cpuQ->rdQ.p = 0;
+
+    memset(cpuQ->wrQ.buffer, 0, sizeof(message) * N);
+    cpuQ->wrQ.slotsCheios = 0;
+    cpuQ->wrQ.slotsVazios = N;
+    cpuQ->wrQ.c = 0;
+    cpuQ->wrQ.p = 0;
+
+    sem_init(cpuQ->rdS + 0, 0, 1);
+    sem_init(cpuQ->rdS + 1, 0, 0);
+
+    sem_init(cpuQ->wrS + 0, 0, 1);
+    sem_init(cpuQ->wrS + 1, 0, 0);
 }
 
 /* toCPU: we send:
@@ -41,14 +60,21 @@ void init(int cpu)
 */
 void toCPU(int cpu, int jID, int jDuration)
 {
-    /* message msg;
-  msg[0]= cpu; msg[1]= jID; msg[2]= jDuration; */
+    struct CPUqueuePair *cpuQ = CPUqueues + cpu;
 
-    //TODO synchronization actions
+    message msg;
+    msg[0]= cpu;
+    msg[1]= jID;
+    msg[2]= jDuration;
 
-    //TODO put the message in the queue to a particular cpu
+    // synchronization actions
+    sem_wait(cpuQ->wrS + 0);
 
-    //TODO synchronization actions
+    // put the message in the queue to a particular cpu
+    putInQueue(msg, &cpuQ->wrQ);
+
+    // synchronization actions
+    sem_post(cpuQ->wrS + 1);
 }
 
 /* fromCPU: receive an EOSIM reply message (from the CPU process)
@@ -61,14 +87,22 @@ void toCPU(int cpu, int jID, int jDuration)
 */
 void fromCPU(int cpu, int *cpuID, int *jID, int *jDuration)
 {
-    // message msg;
+    struct CPUqueuePair *cpuQ = CPUqueues + cpu;
 
-    //TODO synchronization actions
+    message msg;
 
-    //TODO get the message from the queue from a particular cpu
+    // synchronization actions
+    sem_wait(cpuQ->rdS + 1);
 
-    //TODO synchronization actions
+    // get the message from the queue from a particular cpu
+    getFromQueue(msg, &cpuQ->rdQ);
 
-    /* *cpuID= msg[0]; *jID= msg[1]; *jDuration= msg[2];
-  assert(cpu == *cpuID); */
+    // synchronization actions
+    sem_post(cpuQ->rdS + 0);
+
+    *cpuID= msg[0];
+    *jID= msg[1];
+    *jDuration= msg[2];
+
+    assert(cpu == *cpuID);
 }

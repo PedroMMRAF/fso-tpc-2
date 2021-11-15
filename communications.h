@@ -22,14 +22,10 @@ typedef struct
 struct CPUqueuePair
 {
     queue rdQ;
-    sem_t rdS1;
-    sem_t rdS2;
-    sem_t rdS3;
-
     queue wrQ;
-    sem_t wrS1;
-    sem_t wrS2;
-    sem_t wrS3;
+
+    sem_t rdS[2];
+    sem_t wrS[2];
 };
 
 extern struct CPUqueuePair CPUqueues[MAX_CPUs]; //[MAX_CPUs];

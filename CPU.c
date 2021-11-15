@@ -33,16 +33,24 @@ input parameter: the cpu identifier
 */
 void fromSCH(int myCPUid, int *cpuID, int *jID, int *jDuration)
 {
-    //message msg;
+    struct CPUqueuePair *cpuQ = CPUqueues + myCPUid;
 
-    // TODO synchronization actions
+    message msg;
 
-    // TODO get a message from the queue from the producer
+    // synchronization actions
+    sem_wait(cpuQ->wrS + 1);
 
-    // TODO synchonization actions
+    // get a message from the queue from the producer
+    getFromQueue(msg, &cpuQ->wrQ);
 
-    /* *cpuID= msg[0]; *jID= msg[1]; *jDuration= msg[2];
-  assert(myCPUid == *cpuID); */
+    // synchonization actions
+    sem_post(cpuQ->wrS + 0);
+
+    *cpuID = msg[0];
+    *jID = msg[1];
+    *jDuration = msg[2];
+
+    assert(myCPUid == *cpuID);
 }
 
 /* toSCH: send a message (to the Scheduler process)
@@ -53,14 +61,21 @@ void fromSCH(int myCPUid, int *cpuID, int *jID, int *jDuration)
 */
 void toSCH(int cpu, int jID, int jDuration)
 {
-    /* message msg;
-  msg[0]= cpu; msg[1]= jID; msg[2]= jDuration; */
+    struct CPUqueuePair *cpuQ = CPUqueues + cpu;
 
-    // TODO synchronization actions
+    message msg;
+    msg[0] = cpu;
+    msg[1] = jID;
+    msg[2] = jDuration;
 
-    // TODO put a message into the queue to the producer
+    // synchronization actions
+    sem_wait(cpuQ->rdS + 0);
 
-    // TODO synchonization actions
+    // put a message into the queue to the producer
+    putInQueue(msg, &cpuQ->rdQ);
+
+    // synchonization actions
+    sem_post(cpuQ->rdS + 1);
 }
 
 /* ---------------------------------------------- 
@@ -86,7 +101,7 @@ void *CPU(void *id)
         if (jID == EOSIM)
             break;
 
-        //usleep(jDuration*1000);
+        //usleep(jDuration * 1000);
         sleep(jDuration);
         CPUconsumed += jDuration;
     }

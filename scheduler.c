@@ -13,14 +13,15 @@
 #endif
 
 /* ------------------------------------------------------
- Find a free (IDLE) CPU; if found return its number
-int cpuFree(int nCPUs, struct cpuInfo cpuData[]) {
-  for (int i= 0; i < nCPUs; i++)
-    if (cpuData[i].status == IDLE) return i;
-
-  return -1;
+    Find a free (IDLE) CPU; if found return its number
+int cpuFree(int nCPUs, struct cpuInfo cpuData[])
+{
+    for (int i = 0; i < nCPUs; i++)
+        if (cpuData[i].status == IDLE)
+            return i;
+    return -1;
 }
- */
+*/
 
 /* ------------------------------------------------------
  Dispatch a Job waiting at the job queue at index jobQidx
@@ -37,9 +38,9 @@ void dispatch(int jobQidx, struct jobQ jobQueue[],
 }
 
 /* readJobSubmission: read the input (comming from a regular file or from stdin
-		      and store the data on the jobQueue array
+		        and store the data on the jobQueue array
 
-  return: number of lines read (that is, the number of Jobs on the "queue")
+    return: number of lines read (that is, the number of Jobs on the "queue")
 */
 int readJobSubmission(char *filename, struct jobQ jobQueue[])
 {

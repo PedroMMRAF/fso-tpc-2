@@ -35,17 +35,16 @@ struct CPUqueuePair CPUqueues[];
 // Creation of threads/workers
 void createCPUs(int nCPUs)
 {
-
     // workers/threads' identifiers
     ids = (pthread_t *)malloc(nCPUs * sizeof(pthread_t));
 
     for (int cpu = 0; cpu < nCPUs; cpu++)
     {
-
         // init communication and synchronization structures
         init(cpu);
 
-        // TODO Thread/worker creation
+        // Thread/worker creation
+        pthread_create(ids + cpu, NULL, &CPU, (void*)(long)cpu);
     }
 }
 
@@ -53,12 +52,10 @@ void createCPUs(int nCPUs)
 
 void report(int nCPUs, struct cpuInfo cpuData[])
 {
-
     int cpuID, jID, jDuration, totConsumed = 0, totalSimulationTime = 0;
 
     for (int cpu = 0; cpu < nCPUs; cpu++)
     {
-
         fromCPU(cpu, &cpuID, &jID, &jDuration);
 
         cpuData[cpu].usage += jDuration;
@@ -92,7 +89,6 @@ int cmpFunc(const void *x, const void *y)
 
 int main(int argc, char *argv[])
 {
-
     char policy = argv[1][0]; // F or S
     int nCPUs = atoi(argv[2]);
     char *filename = argv[3];
