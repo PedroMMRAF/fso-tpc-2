@@ -1,6 +1,3 @@
-/* ---------------------------------------------- 
- ------------------------------------------------ */
-
 /* ------------------------------------------------------------- */
 /* Messages between Scheduler and CPU are always 3 integers long */
 /* ------------------------------------------------------------- */
@@ -37,13 +34,8 @@ void fromSCH(int myCPUid, int *cpuID, int *jID, int *jDuration)
 
     message msg;
 
-    // synchronization actions
     sem_wait(cpuQ->wrS + 1);
-
-    // get a message from the queue from the producer
     getFromQueue(msg, &cpuQ->wrQ);
-
-    // synchonization actions
     sem_post(cpuQ->wrS + 0);
 
     *cpuID = msg[0];
@@ -68,13 +60,8 @@ void toSCH(int cpu, int jID, int jDuration)
     msg[1] = jID;
     msg[2] = jDuration;
 
-    // synchronization actions
     sem_wait(cpuQ->rdS + 0);
-
-    // put a message into the queue to the producer
     putInQueue(msg, &cpuQ->rdQ);
-
-    // synchonization actions
     sem_post(cpuQ->rdS + 1);
 }
 

@@ -1,4 +1,3 @@
-
 #define CPU_H
 
 void *CPU(void *id);

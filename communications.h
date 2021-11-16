@@ -1,4 +1,3 @@
-
 #define COMMUNICATIONS_H
 
 #ifndef GLOBALS_H
@@ -18,7 +17,7 @@ typedef struct
     int c, p; // c -- consumer index; p -- producer index
 } queue;
 
-//TODO define the sincronization structures
+// define the sincronization structures
 struct CPUqueuePair
 {
     queue rdQ;

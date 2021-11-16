@@ -1,4 +1,3 @@
-
 #define GLOBALS_H
 
 #define MAX_CPUs 4

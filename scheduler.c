@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -33,7 +32,7 @@ void dispatch(int jobQidx, struct jobQ jobQueue[],
 {
 
     cpuData[cpu].status = RUNNING;
-    //printf("Mainthread inside dispatch -- calling toCPU:%d\n", cpu);
+    // printf("Mainthread inside dispatch -- calling toCPU:%d\n", cpu);
     toCPU(cpu, jobQueue[jobQidx].jID, jobQueue[jobQidx].duration);
 }
 

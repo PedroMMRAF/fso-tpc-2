@@ -34,13 +34,13 @@ void init(int cpu)
 {
     struct CPUqueuePair *cpuQ = CPUqueues + cpu;
 
-    memset(cpuQ->rdQ.buffer, 0, sizeof(message) * N);
+    memset(&cpuQ->rdQ.buffer, 0, sizeof(message) * N);
     cpuQ->rdQ.slotsCheios = 0;
     cpuQ->rdQ.slotsVazios = N;
     cpuQ->rdQ.c = 0;
     cpuQ->rdQ.p = 0;
 
-    memset(cpuQ->wrQ.buffer, 0, sizeof(message) * N);
+    memset(&cpuQ->wrQ.buffer, 0, sizeof(message) * N);
     cpuQ->wrQ.slotsCheios = 0;
     cpuQ->wrQ.slotsVazios = N;
     cpuQ->wrQ.c = 0;
@@ -63,17 +63,12 @@ void toCPU(int cpu, int jID, int jDuration)
     struct CPUqueuePair *cpuQ = CPUqueues + cpu;
 
     message msg;
-    msg[0]= cpu;
-    msg[1]= jID;
-    msg[2]= jDuration;
+    msg[0] = cpu;
+    msg[1] = jID;
+    msg[2] = jDuration;
 
-    // synchronization actions
     sem_wait(cpuQ->wrS + 0);
-
-    // put the message in the queue to a particular cpu
     putInQueue(msg, &cpuQ->wrQ);
-
-    // synchronization actions
     sem_post(cpuQ->wrS + 1);
 }
 
@@ -91,18 +86,13 @@ void fromCPU(int cpu, int *cpuID, int *jID, int *jDuration)
 
     message msg;
 
-    // synchronization actions
     sem_wait(cpuQ->rdS + 1);
-
-    // get the message from the queue from a particular cpu
     getFromQueue(msg, &cpuQ->rdQ);
-
-    // synchronization actions
     sem_post(cpuQ->rdS + 0);
 
-    *cpuID= msg[0];
-    *jID= msg[1];
-    *jDuration= msg[2];
+    *cpuID = msg[0];
+    *jID = msg[1];
+    *jDuration = msg[2];
 
     assert(cpu == *cpuID);
 }
